@@ -1,0 +1,433 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #ffffff; /* cards bg in light */
+  --bg-tertiary: #f7f7f7;
+  --text-primary: #1A1A1A;
+  --border-color: #e5e7eb; /* subtle light border */
+  --icon-color: #111111;
+  --shadow-soft: rgba(0, 0, 0, 0.08);
+  /* New light primary */
+  --primary-color: #1d13d6;
+  --primary-gradient: linear-gradient(167deg, rgba(29, 19, 214, 1) 23%, rgba(79, 79, 227, 1) 49%);
+  /* Keep compatibility with existing references */
+  --brand-purple: var(--primary-color);
+  --purple: #9333ea;
+  --downbar-bg-light: #ffffff;
+  --downbar-bg-dark: #0f0f10;
+  --brand-purple-gradient: var(--primary-gradient);
+  --success-green: #31d158;
+  --danger-red: #ff4d6d;
+
+  color-scheme: light dark;
+}
+
+/* UI Switch (SVG icon version) - overrides to support inline SVG icons */
+.ui-switch {
+  --switch-bg: #caced6;
+  --switch-width: 50px;
+  --switch-height: 22px;
+  --circle-size: 30px;
+  --dark-purple: #7a00ff;
+}
+.ui-switch input { display: none; }
+.slider {
+  width: var(--switch-width);
+  height: var(--switch-height);
+  background: var(--switch-bg);
+  border-radius: 999px;
+  cursor: pointer;
+  position: relative;
+}
+.slider .circle {
+  position: absolute;
+  top: -4px;
+  left: 0px;
+  width: var(--circle-size);
+  height: var(--circle-size);
+  background: var(--dark-purple);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+}
+.icon {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+  position: absolute;
+  transition: opacity 0.2s;
+}
+.icon.sun { opacity: 1; }
+.icon.moon { opacity: 0; }
+.ui-switch input:checked + .slider .circle {
+  left: calc(100% - var(--circle-size));
+  background: var(--dark-purple);
+}
+.ui-switch input:checked + .slider .circle .icon.sun { opacity: 0; }
+.ui-switch input:checked + .slider .circle .icon.moon { opacity: 1; }
+
+/* From Uiverse.io by Galahhad - Theme Toggle Switch */
+.ui-switch {
+  --switch-bg: rgb(135, 150, 165);
+  --switch-width: 48px;
+  --switch-height: 20px;
+  --circle-diameter: 32px;
+  --circle-bg: rgb(0, 56, 146);
+  --circle-inset: calc((var(--circle-diameter) - var(--switch-height)) / 2);
+}
+.ui-switch input { display: none; }
+.slider {
+  width: var(--switch-width);
+  height: var(--switch-height);
+  background: var(--switch-bg);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+}
+.slider .circle {
+  top: calc(var(--circle-inset) * -1);
+  left: 0;
+  width: var(--circle-diameter);
+  height: var(--circle-diameter);
+  position: absolute;
+  background: var(--circle-bg);
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bW…");
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: 55% !important;
+  transition: left 150ms, transform 150ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slider .circle::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: inherit;
+  transition: all 500ms;
+  opacity: 0;
+}
+.ui-switch input:checked + .slider .circle {
+  left: calc(100% - var(--circle-diameter));
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bW…");
+}
+.ui-switch input:active + .slider .circle::before {
+  transition: 0s;
+  opacity: 1;
+  width: 0;
+  height: 0;
+}
+
+/* Expenses filters: desktop sizing */
+@media (min-width: 1024px) {
+  .filters-container .filter-input,
+  .filters-container .custom-dropdown .selected {
+    min-height: 48px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    /* Keep PurpleDropdown's own purple glass background and border */
+  }
+  .filters-container .custom-dropdown .arrow {
+    width: 16px;
+  }
+}
+
+[data-theme='dark'] {
+  /* Dark theme */
+  --bg-primary: #000000;
+  --bg-secondary: #0f0f0f;
+  --bg-tertiary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #d0d0d0;
+  --border-color: #ffffff20;
+  --icon-color: #ffffff;
+  --shadow-soft: rgba(255, 255, 255, 0.05);
+  /* Preserve original purple in dark mode */
+  --brand-purple: #9b4dff;
+  --brand-purple-gradient: linear-gradient(90deg, #9b4dff, #c763ff);
+  /* Keep legacy primary tokens pointing at brand-purple for dark */
+  --primary-color: var(--brand-purple);
+  --primary-gradient: var(--brand-purple-gradient);
+  --success-green: #31d158;
+  --danger-red: #ff4d6d;
+}
+
+html,
+body {
+  height: auto !important;
+  overflow-y: auto !important;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.h1-heading {
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
+.card-base {
+  background-color: var(--bg-secondary);
+  border-radius: 18px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 10px var(--shadow-soft);
+  padding: 1rem; /* mobile */
+}
+
+@media (min-width: 1024px) {
+  .card-base {
+    padding: 1.5rem; /* desktop */
+  }
+}
+
+.page-content {
+  padding-top: 80px;
+}
+
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input,
+select,
+textarea {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+button.primary-button {
+  background: var(--primary-gradient);
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 10px rgba(155, 77, 255, 0.4);
+  background-clip: padding-box;
+  border-radius: 9999px !important;
+}
+
+/* Global rounded corners for buttons (pill shape) */
+button,
+.btn,
+.button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  border-radius: 9999px !important;
+  padding: 0.5rem 1rem; /* mobile px-4 py-2 */
+}
+
+@media (min-width: 1024px) {
+  button,
+  .btn,
+  .button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    padding: 0.5rem 1.25rem !important; /* desktop px-5 py-2 */
+  }
+}
+
+/* Do not force padding on circular bottom-nav buttons */
+.bottom-nav button {
+  padding: 0 !important;
+  border-radius: 50% !important;
+}
+
+/* Ensure native selects are rounded */
+select {
+  border-radius: 12px !important;
+}
+
+/* Bottom navigation rounding */
+.bottom-nav {
+  border-radius: 16px;
+}
+.bottom-nav button {
+  border-radius: 50%;
+}
+
+/* Animated checkbox (Uiverse lenin55, adapted to purple) */
+.checkbox-wrapper {
+  --size: 32px;
+}
+
+@media (max-width: 768px) {
+  .checkbox-wrapper {
+    --size: 28px;
+  }
+}
+
+.cl-checkbox {
+  position: relative;
+  display: inline-block;
+}
+
+.cl-checkbox > input {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  z-index: -1;
+  position: absolute;
+  left: -10px;
+  top: -8px;
+  display: block;
+  margin: 0;
+  border-radius: 50%;
+  width: calc(var(--size) + 8px);
+  height: calc(var(--size) + 8px);
+  background-color: rgba(0, 0, 0, 0.6);
+  box-shadow: none;
+  outline: none;
+  opacity: 0;
+  transform: scale(1);
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.2s;
+}
+
+.cl-checkbox > span {
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cl-checkbox > span::before {
+  content: '';
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 3px 11px 3px 1px;
+  border: solid 2px;
+  border-color: rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  width: calc(var(--size) - 14px);
+  height: calc(var(--size) - 14px);
+  vertical-align: top;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.cl-checkbox > span::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 3px;
+  left: 1px;
+  width: 10px;
+  height: 5px;
+  border: solid 2px transparent;
+  border-right: none;
+  border-top: none;
+  transform: translate(3px, 4px) rotate(-45deg);
+}
+
+.cl-checkbox > input:checked,
+.cl-checkbox > input:indeterminate {
+  background-color: transparent;
+}
+
+.cl-checkbox > input:checked + span::before,
+.cl-checkbox > input:indeterminate + span::before {
+  border-color: var(--brand-purple);
+  background-color: var(--brand-purple);
+}
+
+.cl-checkbox > input:checked + span::after,
+.cl-checkbox > input:indeterminate + span::after {
+  border-color: #fff;
+}
+
+.cl-checkbox > input:indeterminate + span::after {
+  border-left: none;
+  transform: translate(4px, 3px);
+}
+
+.cl-checkbox:hover > input {
+  opacity: 0.04;
+}
+
+.cl-checkbox > input:focus {
+  opacity: 0.12;
+}
+
+.cl-checkbox:hover > input:focus {
+  opacity: 0.16;
+}
+
+.cl-checkbox > input:active {
+  opacity: 1;
+  transform: scale(0);
+  transition: transform 0s, opacity 0s;
+}
+
+.cl-checkbox > input:active + span::before {
+  border-color: #b18cff;
+}
+
+.cl-checkbox > input:checked:active + span::before {
+  border-color: transparent;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.cl-checkbox > input:disabled {
+  opacity: 0;
+}
+
+.cl-checkbox > input:disabled + span {
+  color: rgba(0, 0, 0, 0.38);
+  cursor: initial;
+}
+
+.cl-checkbox > input:disabled + span::before {
+  border-color: currentColor;
+}
+
+.cl-checkbox > input:checked:disabled + span::before,
+.cl-checkbox > input:indeterminate:disabled + span::before {
+  border-color: transparent;
+  background-color: currentColor;
+}
+
+/* Expenses page: mobile actions layout */
+@media (max-width: 480px) {
+  .expense-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 20px;
+    padding: 0 12px;
+  }
+  .expense-actions button {
+    padding: 10px 18px;
+    border-radius: 24px;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+  }
+}

@@ -1,0 +1,110 @@
+.select {
+  width: fit-content;
+  cursor: pointer;
+  position: relative;
+  transition: 300ms;
+  overflow: visible;
+  border-radius: 12px;
+  min-width: 140px;
+  pointer-events: auto;
+  /* Derive from light theme primary tokens */
+  --dd-bg: color-mix(in srgb, var(--primary-color) 18%, transparent);
+  --dd-hover: color-mix(in srgb, var(--primary-color) 28%, transparent);
+  --dd-text: var(--text-primary);
+  --dd-border: var(--border-color);
+}
+
+.dark .select,
+[data-theme='dark'] .select {
+  --dd-bg: rgba(80, 0, 150, 0.35);
+  --dd-hover: rgba(140, 0, 255, 0.45);
+  --dd-text: white;
+  --dd-border: rgba(255,255,255,0.1);
+}
+
+.selected {
+  background: var(--dd-bg);
+  padding: 10px 14px;
+  border-radius: 12px !important;
+  color: var(--dd-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--dd-border);
+  backdrop-filter: blur(12px);
+}
+
+.arrow {
+  fill: var(--dd-text);
+  width: 18px;
+  transition: 300ms;
+}
+
+/* Compact size variant */
+.select.compact .selected {
+  padding: 5px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.select.compact .arrow {
+  width: 12px;
+}
+.select.compact.open .options {
+  top: 34px;
+}
+
+/* Full-width variant to stretch in grid columns */
+.select.full {
+  width: 100%;
+  min-width: 0;
+}
+.select.full .selected {
+  width: 100%;
+}
+
+.options {
+  background: var(--dd-bg);
+  backdrop-filter: blur(12px);
+  border-radius: 12px !important;
+  padding: 6px;
+  border: 1px solid var(--dd-border);
+  position: absolute;
+  width: 100%;
+  top: -150px;
+  opacity: 0;
+  z-index: 999999 !important;
+  transition: 250ms ease;
+  pointer-events: auto !important;
+}
+
+.select.open .options {
+  opacity: 1;
+  top: 45px;
+}
+
+.option {
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--dd-text);
+  position: relative;
+  z-index: inherit;
+}
+
+.option:hover {
+  background: var(--dd-hover) !important;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* Hide native radios */
+.options input[type="radio"] {
+  display: none;
+}
+
+.options label {
+  display: inline-block;
+}
+
+.options label::before {
+  content: attr(data-txt);
+}
