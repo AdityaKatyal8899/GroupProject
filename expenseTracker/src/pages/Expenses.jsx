@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { calculateTotalSavings } from '../lib/financeUtils'
 import { useToast } from '../components/common/toast/ToastProvider'
 import LoadingButton from '../components/common/LoadingButton'
+import { apiFetch } from '../lib/api'
 
 const categories = ['Food','Transport','Bills','Shopping','Entertainment','Health','Other']
 
@@ -83,7 +84,7 @@ export default function Expenses() {
   // EXACT function as requested for API call
   const addExpense = async (expense) => {
     try {
-      const response = await fetch("http://localhost:5000/api/expenses/add", {
+      const response = await apiFetch('/api/expenses/add', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(expense),
@@ -500,7 +501,7 @@ export default function Expenses() {
                       if (!amt || totalSavings < amt) return
                       if (savingRecover) return
                       setSavingRecover(true)
-                      fetch('http://localhost:5000/api/savings/use', {
+                      apiFetch('/api/savings/use', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -564,7 +565,7 @@ export default function Expenses() {
                 }
                 // Call backend Savings API
                 setSavingSavings(true)
-                fetch('http://localhost:5000/api/savings/add', {
+                apiFetch('/api/savings/add', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ token: TOKEN, amount: Number(form.amount), note: form.notes?.trim() || '' }),

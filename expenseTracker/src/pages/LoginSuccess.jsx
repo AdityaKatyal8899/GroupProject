@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../components/common/toast/ToastProvider'
+import { apiFetch } from '../lib/api'
 
 export default function LoginSuccess() {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ export default function LoginSuccess() {
         if (!google_id || !name || !email || !picture) {
           throw new Error('Missing login details')
         }
-        const res = await fetch('http://localhost:5000/api/auth/login', {
+        const res = await apiFetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ google_id, name, email, picture, token: access_token_qp }),

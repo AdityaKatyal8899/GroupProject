@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext'
 import AnimatedCheckbox from '../components/ui/AnimatedCheckbox'
 import PurpleDropdown from '../components/ui/PurpleDropdown'
 import LoadingButton from '../components/common/LoadingButton'
+import { apiFetch } from '../lib/api'
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -99,7 +100,7 @@ export default function Settings() {
     try {
       const token = localStorage.getItem('token') || 'test_user_123'
       // 1) Clear backend data for this user
-      await fetch('http://localhost:5000/api/admin/reset', {
+      await apiFetch('/api/admin/reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { apiFetch, apiBase } from '../lib/api'
 import { useExpenses } from './ExpensesContext'
 import { useSavings } from './SavingsContext'
 
@@ -88,14 +89,14 @@ export function FinanceProvider({ children }) {
   async function saveSettingsToAPI({ income, budget, notifications: notif }, token) {
     const payload = { token, income, budget, notifications: notif }
     console.log('[settings] Saving payload =>', payload)
-    let res = await fetch('http://localhost:5000/api/settings/save', {
+    let res = await apiFetch('/api/settings/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     })
     // Fallback to non-/api path if 404 or not ok
     if (!res.ok && res.status === 404) {
-      res = await fetch('http://localhost:5000/settings/save', {
+      res = await apiFetch('/settings/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -115,13 +116,13 @@ export function FinanceProvider({ children }) {
   }
 
   async function reloadSettingsFromAPI(token) {
-    let url = `http://localhost:5000/api/settings/get?token=${encodeURIComponent(token)}`
+    let url = `${apiBase}/api/settings/get?token=${encodeURIComponent(token)}`
     console.log('[settings] Loading from =>', url)
-    let res = await fetch(url)
+    let res = await apiFetch(url)
     if (!res.ok && res.status === 404) {
-      url = `http://localhost:5000/settings/get?token=${encodeURIComponent(token)}`
+      url = `${apiBase}/settings/get?token=${encodeURIComponent(token)}`
       console.log('[settings] Retrying load from =>', url)
-      res = await fetch(url)
+      res = await apiFetch(url)
     }
     let json = null
     try {

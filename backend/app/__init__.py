@@ -4,8 +4,20 @@ from .config import init_config
 
 def create_app():
     app = Flask(__name__)
-    # Allow frontend dev origins; apply to all routes including preflight OPTIONS
-    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
+    # Allow specific frontend origins for API routes with credentials support
+    CORS(
+        app,
+        supports_credentials=True,
+        resources={
+            r"/api/*": {
+                "origins": [
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                    "https://myexpensetracker-six.vercel.app",
+                ]
+            }
+        },
+    )
 
     init_config(app)
 

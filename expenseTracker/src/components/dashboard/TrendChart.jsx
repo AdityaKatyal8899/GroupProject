@@ -21,6 +21,7 @@ import { useFinance } from '../../context/FinanceContext'
 import { useSavings } from '../../context/SavingsContext'
 import { calculateSavingsTrend } from '../../lib/financeUtils'
 import { useTheme } from '../../context/ThemeContext'
+import { apiFetch } from '../../lib/api'
 
 export default function TrendChart() {
   const [range, setRange] = useState('Week')
@@ -66,7 +67,7 @@ export default function TrendChart() {
     }
     const period = (range || 'Week').toLowerCase()
     setLoadingSummary(true)
-    fetch(`http://localhost:5000/api/expenses/summary?token=${encodeURIComponent(token)}&period=${encodeURIComponent(period)}`)
+    apiFetch(`/api/expenses/summary?token=${encodeURIComponent(token)}&period=${encodeURIComponent(period)}`)
       .then(async (res) => {
         let json = null
         try { json = await res.json() } catch {}

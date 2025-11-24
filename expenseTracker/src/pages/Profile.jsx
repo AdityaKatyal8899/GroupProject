@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../components/common/toast/ToastProvider'
+import { apiFetch } from '../lib/api'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -34,7 +35,7 @@ export default function Profile() {
     setSaving(true)
     try {
       const token = initial.token
-      const res = await fetch('http://localhost:5000/api/profile/update', {
+      const res = await apiFetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, name, avatar }),

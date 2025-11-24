@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../components/common/toast/ToastProvider'
+import { apiBase } from '../lib/api'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -23,7 +24,7 @@ export default function Login() {
         <h1 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Sign in</h1>
         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Continue with your Google account</p>
         <button
-          onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google/login' }}
+          onClick={() => { window.location.href = `${apiBase}/api/auth/google/login` }}
           className="primary-button inline-flex items-center justify-center w-full py-2 rounded-lg"
         >
           Continue with Google
