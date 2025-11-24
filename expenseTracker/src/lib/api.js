@@ -6,7 +6,7 @@ const DEFAULT_DEV = 'http://localhost:5000'
 const DEFAULT_PROD = 'https://myexpesnetrackerbackend-aditya.onrender.com'
 
 function resolveApiBase() {
-  const viteEnv = (typeof import !== 'undefined' && import.meta && import.meta.env) ? import.meta.env : {}
+  const viteEnv = (typeof import.meta !== 'undefined' && import.meta && import.meta.env) ? import.meta.env : {}
   const viteUrl = viteEnv && viteEnv.VITE_API_URL
   if (viteUrl) return viteUrl.replace(/\/$/, '')
 
