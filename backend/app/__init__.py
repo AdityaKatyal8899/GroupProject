@@ -23,6 +23,9 @@ def create_app():
 
     # Register API blueprints
     try:
+        from app.routes.main_routes import main_routes
+        app.register_blueprint(main_routes)
+
         from app.routes.expense_routes import expense_routes
         app.register_blueprint(expense_routes)
 
