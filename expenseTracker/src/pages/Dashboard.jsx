@@ -8,7 +8,7 @@ import SavingsCard from '../components/dashboard/SavingsCard'
 import { useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
-  const { monthlyIncome, monthlyBudget, totalSpent, totalSavings, remainingMoney } = useFinance()
+  const { monthlyIncome, monthlyBudget, totalSpent, totalSavings, remainingMoney, currency } = useFinance()
   const navigate = useNavigate()
   
   return (
@@ -28,11 +28,11 @@ export default function Dashboard() {
       <div className="hidden md:block space-y-6">
         {/* Summary row: income/budget/spent/remaining + savings card (live data from context) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <SummaryCard title="Income" value={`$${Number(monthlyIncome || 0).toFixed(2)}`} icon={Banknote} />
-          <SummaryCard title="Budget" value={`$${Number(monthlyBudget || 0).toFixed(2)}`} icon={PiggyBank} />
-          <SummaryCard title="Spent" value={`$${Number(totalSpent || 0).toFixed(2)}`} icon={Wallet} />
-          <SummaryCard title="Remaining Money" value={`$${Number(remainingMoney || 0).toFixed(2)}`} icon={CircleDollarSign} />
-          <SavingsCard amount={Number(totalSavings || 0)} />
+          <SummaryCard title="Income" value={`${currency}${Number(monthlyIncome || 0).toFixed(2)}`} icon={Banknote} />
+          <SummaryCard title="Budget" value={`${currency}${Number(monthlyBudget || 0).toFixed(2)}`} icon={PiggyBank} />
+          <SummaryCard title="Spent" value={`${currency}${Number(totalSpent || 0).toFixed(2)}`} icon={Wallet} />
+          <SummaryCard title="Remaining Money" value={`${currency}${Number(remainingMoney || 0).toFixed(2)}`} icon={CircleDollarSign} />
+          <SavingsCard amount={Number(totalSavings || 0)} currency={currency} />
         </div>
 
         {/* Main analytics: TrendChart (2fr) + SavingsCircle (1fr) */}
@@ -60,10 +60,10 @@ export default function Dashboard() {
       <div className="flex flex-col space-y-6 md:hidden">
         {/* Summary cards: 2-column compact grid on mobile (live data from context) */}
         <div className="grid grid-cols-2 gap-4">
-          <SummaryCard title="Income" value={`$${Number(monthlyIncome || 0).toFixed(2)}`} icon={Banknote} />
-          <SummaryCard title="Budget" value={`$${Number(monthlyBudget || 0).toFixed(2)}`} icon={PiggyBank} />
-          <SummaryCard title="Spent" value={`$${Number(totalSpent || 0).toFixed(2)}`} icon={Wallet} />
-          <SummaryCard title="Remain" value={`$${Number(remainingMoney || 0).toFixed(2)}`} icon={CircleDollarSign} />
+          <SummaryCard title="Income" value={`${currency}${Number(monthlyIncome || 0).toFixed(2)}`} icon={Banknote} />
+          <SummaryCard title="Budget" value={`${currency}${Number(monthlyBudget || 0).toFixed(2)}`} icon={PiggyBank} />
+          <SummaryCard title="Spent" value={`${currency}${Number(totalSpent || 0).toFixed(2)}`} icon={Wallet} />
+          <SummaryCard title="Remain" value={`${currency}${Number(remainingMoney || 0).toFixed(2)}`} icon={CircleDollarSign} />
         </div>
 
         {/* Mobile TrendChart container with extra padding and height */}

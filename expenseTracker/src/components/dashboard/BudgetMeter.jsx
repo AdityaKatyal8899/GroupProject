@@ -4,7 +4,7 @@ import { useExpenses } from '../../context/ExpensesContext'
 import { calculateBudgetPercentage, calculateTotalSpent } from '../../lib/financeUtils'
 
 export default function BudgetMeter() {
-  const { monthlyBudget } = useFinance()
+  const { monthlyBudget, currency } = useFinance()
   const { expenses } = useExpenses()
 
   const { pct, spent } = useMemo(() => {
@@ -40,11 +40,11 @@ export default function BudgetMeter() {
         </div>
         <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
           You have spent{' '}
-          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>${spent.toFixed(2)}</span>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{currency}{spent.toFixed(2)}</span>
           {budget > 0 && (
             <>
               {' '}
-              of <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>${budget.toFixed(2)}</span> ({pct}%)
+              of <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{currency}{budget.toFixed(2)}</span> ({pct}%)
             </>
           )}
         </div>

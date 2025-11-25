@@ -12,8 +12,8 @@ def reset_user_data():
     if not token:
         return jsonify({"success": False, "message": "token is required"}), 400
 
-    # Expenses use user_id field, savings/settings use token field
-    exp_result = db.expenses.delete_many({"user_id": token})
+    # All collections now use 'token' to identify the user
+    exp_result = db.expenses.delete_many({"token": token})
     sav_result = db.savings.delete_many({"token": token})
     set_result = db.settings.delete_many({"token": token})
 

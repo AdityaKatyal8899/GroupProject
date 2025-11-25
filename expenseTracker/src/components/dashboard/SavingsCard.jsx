@@ -1,6 +1,6 @@
 import { cn } from '../../lib/cn'
 
-export default function SavingsCard({ amount }) {
+export default function SavingsCard({ amount, currency = '$' }) {
   return (
     <div
       className={cn(
@@ -15,14 +15,14 @@ export default function SavingsCard({ amount }) {
             Savings
           </div>
           <div className="text-2xl font-semibold mt-1" style={{ fontFamily: 'Work Sans, ui-sans-serif, system-ui, sans-serif' }}>
-            ${amount.toFixed(2)}
+            {currency}{amount.toFixed(2)}
           </div>
           <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)', opacity: 0.8 }}>
             Total saved this month
           </div>
         </div>
         <div className="w-10 h-10 rounded-xl grid place-items-center bg-green-500/20 text-green-400">
-          <span className="text-lg font-bold">$</span>
+          <span className="text-lg font-bold">{currency}</span>
         </div>
       </div>
     </div>

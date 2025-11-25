@@ -33,7 +33,7 @@ export default function TrendChart() {
   const { savings } = useSavings()
   const dailyExpenses = useMemo(() => getDailyTotals(expenses || []), [expenses])
   const dailySavings = useMemo(() => calculateSavingsTrend(savings || []), [savings])
-  const { monthlyBudget } = useFinance()
+  const { monthlyBudget, currency } = useFinance()
   const { resolvedTheme } = useTheme()
 
   const isDark = resolvedTheme === 'dark'
@@ -266,7 +266,7 @@ export default function TrendChart() {
                   return (
                     <div style={{ background: isDark ? '#121212' : '#ffffff', border: '1px solid var(--border-color)', borderRadius: 12, padding: 8, color: 'var(--text-primary)' }}>
                       <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Amount: ₹{amt.toFixed(2)}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Amount: {currency}{amt.toFixed(2)}</div>
                       <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Percent: {percent}%</div>
                     </div>
                   )

@@ -5,10 +5,6 @@ from app.config import db  # provided by project config
 from app.utils.validators import validate_expense_data
 from app.models.expense_model import new_expense_document, apply_expense_updates
 
-
-USER_ID = "test_user_123"
-
-
 def _serialize(exp):
     if not exp:
         return None
@@ -23,23 +19,23 @@ def _serialize(exp):
     return out
 
 
-def add_expense(data: dict):
+def add_expense(token: str, data: dict):
     ok, err = validate_expense_data(data)
     if not ok:
         return None, err
 
-    doc = new_expense_document(USER_ID, data)
+    doc = new_expense_document(token, data)
     inserted = db.expenses.insert_one(doc)
     saved = db.expenses.find_one({"_id": inserted.inserted_id})
     return _serialize(saved), None
 
 
-def get_expenses(user_id: str = USER_ID):
-    cursor = db.expenses.find({"user_id": user_id}).sort("created_at", -1)
+def get_expenses(token: str):
+    cursor = db.expenses.find({"token": token}).sort("created_at", -1)
     return [_serialize(e) for e in cursor]
 
 
-def update_expense(expense_id: str, data: dict):
+def update_expense(token: str, expense_id: str, data: dict):
     # Validate fields if provided
     # We perform a partial validation: only validate fields present
     partial = {}
@@ -50,7 +46,7 @@ def update_expense(expense_id: str, data: dict):
         # Build a temp dict merging existing doc for validation completeness
         # Fetch existing
         try:
-            existing = db.expenses.find_one({"_id": ObjectId(expense_id), "user_id": USER_ID})
+            existing = db.expenses.find_one({"_id": ObjectId(expense_id), "token": token})
         except Exception:
             existing = None
         if not existing:
@@ -75,12 +71,11 @@ def update_expense(expense_id: str, data: dict):
         return None, "No valid fields to update"
 
 
-def delete_expense(expense_id: str):
+def delete_expense(token: str, expense_id: str):
     try:
-        res = db.expenses.delete_one({"_id": ObjectId(expense_id), "user_id": USER_ID})
+        res = db.expenses.delete_one({"_id": ObjectId(expense_id), "token": token})
     except Exception:
         return False, "Invalid expense id"
     if res.deleted_count == 0:
         return False, "Expense not found"
     return True, None
-

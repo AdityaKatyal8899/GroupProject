@@ -10,6 +10,7 @@ export function FinanceProvider({ children }) {
   const [monthlyIncome, setMonthlyIncome] = useState(0)
   const [monthlyBudget, setMonthlyBudget] = useState(0)
   const [notifications, setNotifications] = useState({ budgetAlert: false, largeExpense: false, monthlyEmail: false })
+  const [currency, setCurrency] = useState('$')
   const expCtx = (typeof useExpenses === 'function') ? useExpenses() : null
   const savCtx = (typeof useSavings === 'function') ? useSavings() : null
   const expenses = expCtx && Array.isArray(expCtx.expenses) ? expCtx.expenses : []
@@ -86,8 +87,9 @@ export function FinanceProvider({ children }) {
     } catch {}
   }, [monthlyIncome, monthlyBudget])
 
-  async function saveSettingsToAPI({ income, budget, notifications: notif }, token) {
+  async function saveSettingsToAPI({ income, budget, notifications: notif, currency: cur }, token) {
     const payload = { token, income, budget, notifications: notif }
+    if (cur) payload.currency = cur
     console.log('[settings] Saving payload =>', payload)
     let res = await apiFetch('/api/settings/save', {
       method: 'POST',
@@ -141,6 +143,7 @@ export function FinanceProvider({ children }) {
       largeExpense: !!data.notifications.largeExpense,
       monthlyEmail: !!data.notifications.monthlyEmail,
     })
+    if (data.currency && typeof data.currency === 'string') setCurrency(data.currency || '$')
     console.log('[settings] Loaded data =>', data)
     return data
   }
@@ -150,6 +153,7 @@ export function FinanceProvider({ children }) {
       monthlyIncome,
       monthlyBudget,
       notifications,
+      currency,
       totalSpent,
       totalSavings,
       remainingIncome,
@@ -158,11 +162,12 @@ export function FinanceProvider({ children }) {
       setMonthlyIncome,
       setMonthlyBudget,
       setNotifications,
+      setCurrency,
       saveSettingsToAPI,
       reloadSettingsFromAPI,
       refreshSettings: reloadSettingsFromAPI,
     }),
-    [monthlyIncome, monthlyBudget, notifications, totalSpent, totalSavings, remainingMoney]
+    [monthlyIncome, monthlyBudget, notifications, currency, totalSpent, totalSavings, remainingMoney]
   )
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>

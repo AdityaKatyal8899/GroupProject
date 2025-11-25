@@ -81,8 +81,8 @@ export default function Settings() {
     if (savingSettings) return
     setSavingSettings(true)
     try {
-      const token = localStorage.getItem('token') || 'test_user_123'
-      await saveSettingsToAPI({ income: incomeVal, budget: budgetVal, notifications: formNotifications }, token)
+      const token = localStorage.getItem('token')
+      await saveSettingsToAPI({ income: incomeVal, budget: budgetVal, notifications: formNotifications, currency }, token)
       localStorage.setItem('expensewise_currency', currency)
       await reloadSettingsFromAPI(token)
       setLocalToast({ show: true, type: 'success', message: 'Settings updated successfully' })
@@ -98,7 +98,7 @@ export default function Settings() {
     if (resetting) return
     setResetting(true)
     try {
-      const token = localStorage.getItem('token') || 'test_user_123'
+      const token = localStorage.getItem('token')
       // 1) Clear backend data for this user
       await apiFetch('/api/admin/reset', {
         method: 'POST',
@@ -106,7 +106,7 @@ export default function Settings() {
         body: JSON.stringify({ token })
       })
       // 2) Persist 0 income/budget and false notifications
-      const zeros = { income: 0, budget: 0, notifications: { budgetAlert: false, largeExpense: false, monthlyEmail: false } }
+      const zeros = { income: 0, budget: 0, notifications: { budgetAlert: false, largeExpense: false, monthlyEmail: false }, currency }
       await saveSettingsToAPI(zeros, token)
       // 3) Clear local UI state immediately
       clearExpenses()

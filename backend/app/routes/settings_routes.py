@@ -15,6 +15,7 @@ def save_settings():
         income = data.get("income")
         budget = data.get("budget")
         notifications = data.get("notifications")
+        currency = data.get("currency") or "$"
 
         if not token:
             return jsonify({"success": False, "message": "token is required"}), 400
@@ -28,6 +29,7 @@ def save_settings():
                     "income": income,
                     "budget": budget,
                     "notifications": notifications,
+                    "currency": currency,
                     "updated_at": datetime.utcnow(),
                 }
             },
@@ -56,8 +58,13 @@ def get_settings():
                     "income": None,
                     "budget": None,
                     "notifications": {"budgetAlert": False, "largeExpense": False, "monthlyEmail": False},
+                    "currency": "$",
                 },
             }), 200
+
+        # Ensure currency default when missing in older records
+        if not record.get("currency"):
+            record["currency"] = "$"
 
         return jsonify({"success": True, "data": record}), 200
     except Exception as e:

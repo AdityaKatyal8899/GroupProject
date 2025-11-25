@@ -110,8 +110,15 @@ def callback():
     now = datetime.utcnow()
     if record:
         access_token = record.get('access_token') or f"u_{uuid.uuid4().hex}"
-        # Update only last_login
-        users.update_one({'google_id': google_id}, {'$set': {'last_login': now}})
+        # Update profile fields if changed, and bump last_login. Do not overwrite access_token.
+        update_fields = {'last_login': now}
+        if name and name != record.get('name'):
+            update_fields['name'] = name
+        if email and email != record.get('email'):
+            update_fields['email'] = email
+        if picture and picture != record.get('picture'):
+            update_fields['picture'] = picture
+        users.update_one({'google_id': google_id}, {'$set': update_fields})
     else:
         access_token = f"u_{uuid.uuid4().hex}"
         users.insert_one({

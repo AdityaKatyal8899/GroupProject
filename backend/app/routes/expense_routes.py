@@ -17,7 +17,10 @@ expense_routes = Blueprint("expense_routes", __name__, url_prefix="/api/expenses
 @expense_routes.route("/add", methods=["POST"])
 def add():
     data = request.get_json(silent=True) or {}
-    saved, err = add_expense(data)
+    token = data.get("token")
+    if not token:
+        return error("token is required", 400)
+    saved, err = add_expense(token, data)
     if err:
         return error(err, 400)
     return success("Expense added", saved, 201)
@@ -25,14 +28,20 @@ def add():
 
 @expense_routes.route("/list", methods=["GET"])
 def list_expenses():
-    items = get_expenses()
+    token = request.args.get("token")
+    if not token:
+        return error("token is required", 400)
+    items = get_expenses(token)
     return success("Expenses fetched", items, 200)
 
 
 @expense_routes.route("/update/<expense_id>", methods=["PUT"])
 def update(expense_id):
     data = request.get_json(silent=True) or {}
-    saved, err = update_expense(expense_id, data)
+    token = data.get("token")
+    if not token:
+        return error("token is required", 400)
+    saved, err = update_expense(token, expense_id, data)
     if err:
         code = 404 if err == "Expense not found" else 400
         return error(err, code)
@@ -41,7 +50,10 @@ def update(expense_id):
 
 @expense_routes.route("/delete/<expense_id>", methods=["DELETE"])
 def delete(expense_id):
-    ok, err = delete_expense(expense_id)
+    token = request.args.get("token") or (request.get_json(silent=True) or {}).get("token")
+    if not token:
+        return error("token is required", 400)
+    ok, err = delete_expense(token, expense_id)
     if not ok:
         code = 404 if err == "Expense not found" else 400
         return error(err, code)
@@ -78,8 +90,8 @@ def summary():
     except Exception:
         budget = 0.0
 
-    # Build query: by user_id, exclude recovered/paidFromSavings entries, and within period
-    q = {"user_id": token}
+    # Build query: by token, exclude recovered/paidFromSavings entries, and within period
+    q = {"token": token}
     # Exclude paidFromSavings=true if present
     q["$or"] = [{"paidFromSavings": {"$exists": False}}, {"paidFromSavings": False}]
 

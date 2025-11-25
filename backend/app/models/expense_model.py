@@ -5,22 +5,10 @@ def now_utc():
     return datetime.utcnow()
 
 
-def new_expense_document(user_id: str, data: dict) -> dict:
-    """
-    Shapes an expense document for MongoDB (no ORM).
-    Fields:
-      - user_id (str)
-      - category (str)
-      - amount (float)
-      - description (optional str)
-      - date (ISO string)
-      - recovered_from_savings (bool)
-      - created_at (datetime)
-      - updated_at (datetime)
-    """
+def new_expense_document(token: str, data: dict) -> dict:
     created = now_utc()
     return {
-        "user_id": user_id,
+        "token": token,
         "category": data.get("category"),
         "amount": float(data.get("amount", 0)),
         "description": data.get("description", ""),

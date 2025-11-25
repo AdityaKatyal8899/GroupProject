@@ -7,11 +7,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { calculateTotalSavings } from '../lib/financeUtils'
 import { useToast } from '../components/common/toast/ToastProvider'
 import LoadingButton from '../components/common/LoadingButton'
+import { useFinance } from '../context/FinanceContext'
 import { apiFetch } from '../lib/api'
 
 const categories = ['Food','Transport','Bills','Shopping','Entertainment','Health','Other']
 
 export default function Expenses() {
+  const { currency } = useFinance()
   const { expenses, addExpense: addExpenseLocalState, deleteExpense, editExpense, recoverExpense, payExpenseFromSavings } = useExpenses()
   const { savings, addSaving, addSavingFromRecovery, spendFromSavings } = useSavings()
   const [open, setOpen] = useState(false)
@@ -19,7 +21,7 @@ export default function Expenses() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const TOKEN = 'test_user_123'
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
 
   // Loading states for buttons
   const [savingExpense, setSavingExpense] = useState(false)
@@ -87,7 +89,7 @@ export default function Expenses() {
       const response = await apiFetch('/api/expenses/add', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(expense),
+        body: JSON.stringify({ ...expense, token }),
       })
       const data = await response.json()
       console.log(data)
@@ -278,7 +280,7 @@ export default function Expenses() {
                     </div>
                   </td>
                   <td className="px-6 py-3">{e.category || '—'}</td>
-                  <td className="px-6 py-3">${Number(e.amount).toFixed(2)}</td>
+                  <td className="px-6 py-3">{currency}{Number(e.amount).toFixed(2)}</td>
                   <td className="px-6 py-3">{e.date}</td>
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3 text-xs text-white/70">
@@ -505,7 +507,7 @@ export default function Expenses() {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                          token: TOKEN,
+                          token,
                           amount: amt,
                           category: editForm.category,
                           description: (editForm.notes || editForm.name || '').toString(),
@@ -568,7 +570,7 @@ export default function Expenses() {
                 apiFetch('/api/savings/add', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ token: TOKEN, amount: Number(form.amount), note: form.notes?.trim() || '' }),
+                  body: JSON.stringify({ token, amount: Number(form.amount), note: form.notes?.trim() || '' }),
                 })
                   .then((res) => res.json())
                   .then((data) => {
