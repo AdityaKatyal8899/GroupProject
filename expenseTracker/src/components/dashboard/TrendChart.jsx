@@ -79,7 +79,7 @@ export default function TrendChart() {
         setSummary(items)
       })
       .catch((e) => {
-        console.error('[histogram] summary load error', e)
+        // console.error('[histogram] summary load error', e)
         setSummary([])
       })
       .finally(() => setLoadingSummary(false))
@@ -106,7 +106,7 @@ export default function TrendChart() {
   // Debug: verify data shape
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.log('barChartData:', barChartData)
+    // console.log('barChartData:', barChartData)
   }, [barChartData])
 
   useEffect(() => {

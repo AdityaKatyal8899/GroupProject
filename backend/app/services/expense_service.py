@@ -1,7 +1,7 @@
 from datetime import datetime
 from bson import ObjectId
 
-from app.config import db  # provided by project config
+from app.config import db
 from app.utils.validators import validate_expense_data
 from app.models.expense_model import new_expense_document, apply_expense_updates
 

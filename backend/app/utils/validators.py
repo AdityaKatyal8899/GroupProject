@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 def validate_expense_data(data: dict):
     if not isinstance(data, dict):
         return False, "Invalid payload"
@@ -20,9 +19,9 @@ def validate_expense_data(data: dict):
 
     if not date or not isinstance(date, str):
         return False, "'date' is required and must be an ISO string"
-    # Basic ISO format check
+
     try:
-        # Accept both date and datetime strings
+
         if 'T' in date:
             datetime.fromisoformat(date.replace('Z', '+00:00'))
         else:

@@ -10,7 +10,7 @@ export function FinanceProvider({ children }) {
   const [monthlyIncome, setMonthlyIncome] = useState(0)
   const [monthlyBudget, setMonthlyBudget] = useState(0)
   const [notifications, setNotifications] = useState({ budgetAlert: false, largeExpense: false, monthlyEmail: false })
-  const [currency, setCurrency] = useState('$')
+  const [currency, setCurrency] = useState('$ ')
   const expCtx = (typeof useExpenses === 'function') ? useExpenses() : null
   const savCtx = (typeof useSavings === 'function') ? useSavings() : null
   const expenses = expCtx && Array.isArray(expCtx.expenses) ? expCtx.expenses : []
@@ -90,7 +90,6 @@ export function FinanceProvider({ children }) {
   async function saveSettingsToAPI({ income, budget, notifications: notif, currency: cur }, token) {
     const payload = { token, income, budget, notifications: notif }
     if (cur) payload.currency = cur
-    console.log('[settings] Saving payload =>', payload)
     let res = await apiFetch('/api/settings/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -110,20 +109,18 @@ export function FinanceProvider({ children }) {
     } catch {}
     if (!res.ok) {
       const msg = (data && (data.message || data.error)) || res.statusText || 'Failed to save settings'
-      console.error('[settings] Save error =>', res.status, msg, data)
+      // console.error('[settings] Save error =>', res.status, msg, data)
       throw new Error(msg)
     }
-    console.log('[settings] Save response =>', data)
     return data
   }
 
   async function reloadSettingsFromAPI(token) {
     let url = `${apiBase}/api/settings/get?token=${encodeURIComponent(token)}`
-    console.log('[settings] Loading from =>', url)
+    // console.log('[settings] Loading from =>', url)
     let res = await apiFetch(url)
     if (!res.ok && res.status === 404) {
       url = `${apiBase}/settings/get?token=${encodeURIComponent(token)}`
-      console.log('[settings] Retrying load from =>', url)
       res = await apiFetch(url)
     }
     let json = null
@@ -132,7 +129,7 @@ export function FinanceProvider({ children }) {
     } catch {}
     if (!res.ok) {
       const msg = (json && (json.message || json.error)) || res.statusText || 'Failed to load settings'
-      console.error('[settings] Load error =>', res.status, msg, json)
+      // console.error('[settings] Load error =>', res.status, msg, json)
       throw new Error(msg)
     }
     const data = json?.data || {}
@@ -144,7 +141,6 @@ export function FinanceProvider({ children }) {
       monthlyEmail: !!data.notifications.monthlyEmail,
     })
     if (data.currency && typeof data.currency === 'string') setCurrency(data.currency || '$')
-    console.log('[settings] Loaded data =>', data)
     return data
   }
 

@@ -1,98 +1,106 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import { apiFetch, apiBase } from "../lib/api";
 
-export const ExpensesContext = createContext()
-const STORAGE_KEY = 'expensewise.expenses.v1'
+export const ExpensesContext = createContext();
 
 export function ExpensesProvider({ children }) {
-  const [expenses, setExpenses] = useState(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      return raw ? JSON.parse(raw) : []
-    } catch {
-      return []
-    }
-  })
+  const [expenses, setExpenses] = useState([]);
+  const token = localStorage.getItem("token");
 
+  // Load expenses from backend
   useEffect(() => {
+    if (!token) return;
+    loadExpenses();
+  }, [token]);
+
+  async function loadExpenses() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses))
-    } catch {}
-  }, [expenses])
+      const res = await apiFetch(`/api/expenses/get?token=${token}`);
+      const json = await res.json();
 
-  function addExpense(expense) {
-    const id = Date.now().toString()
-    const item = { id, type: 'expense', ...expense }
-    setExpenses((prev) => [item, ...prev])
-    return id
-  }
-
-  function editExpense(id, updatedExpense) {
-    setExpenses((prev) => prev.map((e) => (e.id === id ? { ...e, ...updatedExpense } : e)))
-  }
-
-  function deleteExpense(id) {
-    setExpenses((prev) => prev.filter((e) => e.id !== id))
-  }
-
-  function clearExpenses() {
-    setExpenses([])
-  }
-
-  function refreshExpenses() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      const next = raw ? JSON.parse(raw) : []
-      setExpenses(Array.isArray(next) ? next : [])
-    } catch {
-      setExpenses([])
+      if (json?.success) {
+        setExpenses(Array.isArray(json.data) ? json.data : []);
+      } else {
+        setExpenses([]);
+      }
+    } catch (err) {
+      // console.error("Failed to load expenses:", err);
+      setExpenses([]);
     }
   }
 
-  function updateExpense(id, updatedExpense) {
-    editExpense(id, updatedExpense)
+  // Add expense → backend
+  async function addExpense(expense) {
+    try {
+      const payload = { ...expense, token };
+      const res = await apiFetch(`/api/expenses/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+
+      if (json?.success) {
+        await loadExpenses();
+      }
+
+      return json;
+    } catch (err) {
+      // console.error("Add expense failed:", err);
+    }
   }
 
-  function recoverExpense(id, amount) {
-    const delta = Number(amount) || 0
-    if (!delta) return
-    setExpenses((prev) => {
-      const updated = prev
-        .map((e) => {
-          if (e.id !== id) return e
-          const current = Number(e.amount) || 0
-          const next = current - delta
-          if (next <= 0) return { ...e, amount: 0 }
-          return { ...e, amount: next }
-        })
-        .filter((e) => (Number(e.amount) || 0) > 0)
-      return updated
-    })
+  // Edit expense → backend
+  async function updateExpense(id, updates) {
+    try {
+      const payload = { id, token, ...updates };
+      const res = await apiFetch(`/api/expenses/update`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      await loadExpenses();
+      return await res.json();
+    } catch (err) {
+      // console.error("Update failed:", err);
+    }
   }
 
-  function payExpenseFromSavings(id) {
-    setExpenses((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, paidFromSavings: true } : e)),
-    )
+  // Delete expense → backend
+  async function deleteExpense(id) {
+    try {
+      const res = await apiFetch(`/api/expenses/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, token }),
+      });
+
+      await loadExpenses();
+      return await res.json();
+    } catch (err) {
+      // console.error("Delete failed:", err);
+    }
   }
 
   const value = useMemo(
     () => ({
       expenses,
-      refreshExpenses,
       addExpense,
       updateExpense,
-      editExpense,
       deleteExpense,
-      clearExpenses,
-      recoverExpense,
-      payExpenseFromSavings,
+      refreshExpenses: loadExpenses,
     }),
     [expenses]
-  )
+  );
 
-  return <ExpensesContext.Provider value={value}>{children}</ExpensesContext.Provider>
+  return (
+    <ExpensesContext.Provider value={value}>
+      {children}
+    </ExpensesContext.Provider>
+  );
 }
 
 export function useExpenses() {
-  return useContext(ExpensesContext)
+  return useContext(ExpensesContext);
 }
