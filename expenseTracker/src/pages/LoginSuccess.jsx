@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../components/common/toast/ToastProvider'
 import { apiFetch } from '../lib/api'
+import { sendWelcomeEmail } from '../lib/sendEmail'
 
 export default function LoginSuccess() {
   const navigate = useNavigate()
@@ -20,11 +21,13 @@ export default function LoginSuccess() {
         if (!google_id || !name || !email || !picture) {
           throw new Error('Missing login details')
         }
+
         const res = await apiFetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ google_id, name, email, picture, token: access_token_qp }),
         })
+
         let json = null
         try { json = await res.json() } catch {}
         if (!res.ok) throw new Error((json && (json.message || json.error)) || 'Login failed')
@@ -37,6 +40,7 @@ export default function LoginSuccess() {
 
         if (!appToken || !appEmail) throw new Error('Invalid backend response')
 
+        // Store user locally
         try {
           localStorage.setItem('token', appToken)
           if (appName) localStorage.setItem('name', appName)
@@ -47,8 +51,14 @@ export default function LoginSuccess() {
           }
         } catch {}
 
+        // 👇 ONLY send welcome email if backend says this is first login 👇
+        if (payload.sendWelcome === true) {
+          sendWelcomeEmail({ name: appName, email: appEmail })
+        }
+
         showToast('success', 'Logged in successfully')
         navigate('/dashboard', { replace: true })
+
       } catch (e) {
         showToast('error', e?.message || 'Login failed')
         navigate('/login', { replace: true })
