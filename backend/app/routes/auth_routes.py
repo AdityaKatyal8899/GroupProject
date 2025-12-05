@@ -63,20 +63,8 @@ def google_auth():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-
 @auth_bp.route('/auth/login', methods=['POST'])
 def auth_login():
-    """Finalize login after OAuth callback by upserting a user by google_id.
-
-    Expects JSON body:
-    {
-      google_id: str,
-      name: str,
-      email: str,
-      picture: str,
-      token: str (optional legacy field; ignored for new access_token generation)
-    }
-    """
     data = request.get_json(silent=True) or {}
     google_id_val = data.get('google_id')
     name = data.get('name')
@@ -96,17 +84,24 @@ def auth_login():
     existing = users.find_one({'google_id': google_id_val})
 
     now = datetime.utcnow()
+    sendWelcome = False  
+
     if existing:
         access_token = existing.get('access_token')
         if not access_token:
             access_token = f"u_{uuid.uuid4().hex}"
             users.update_one({'google_id': google_id_val}, {'$set': {'access_token': access_token}})
+
+        if not existing.get("welcome_sent", False):
+            sendWelcome = True
+            users.update_one({'google_id': google_id_val}, {'$set': {'welcome_sent': True}})
+
         # Update only last_login for existing users
         users.update_one({'google_id': google_id_val}, {'$set': {'last_login': now}})
-        # Return existing profile fields (do not mutate name/email/picture here)
         resp_name = existing.get('name', name)
         resp_email = existing.get('email', email)
         resp_picture = existing.get('picture', picture)
+
     else:
         access_token = f"u_{uuid.uuid4().hex}"
         users.insert_one({
@@ -117,7 +112,9 @@ def auth_login():
             'picture': picture,
             'created_at': now,
             'last_login': now,
+            'welcome_sent': True   
         })
+        sendWelcome = True
         resp_name = name
         resp_email = email
         resp_picture = picture
@@ -128,5 +125,7 @@ def auth_login():
         'name': resp_name,
         'email': resp_email,
         'picture': resp_picture,
+        'sendWelcome': sendWelcome  
     }
+
     return jsonify(payload), 200
